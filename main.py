@@ -18,6 +18,9 @@ def clean_csv(input_file, output_file):
         except StopIteration:
             raise ValueError("The CSV file must contain a header row.")
 
+        if any("\x00" in name for name in original_headers):
+            raise ValueError("NUL bytes are not allowed in CSV files.")
+
         if not original_headers:
             raise ValueError("The CSV file must contain a header row.")
 
@@ -39,6 +42,9 @@ def clean_csv(input_file, output_file):
 
         for line_number, row in enumerate(reader, start=2):
             input_row_count += 1
+
+            if any("\x00" in value for value in row):
+                raise ValueError("NUL bytes are not allowed in CSV files.")
 
             if len(row) != len(fieldnames):
                 raise ValueError(

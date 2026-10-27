@@ -104,6 +104,21 @@ class TestCleanSheetWebApp(unittest.TestCase):
 
         self.assertEqual(response.status_code, 404)
 
+    def test_rejects_nul_byte_in_uploaded_csv(self):
+        response = self.client.post(
+            "/clean",
+            data={
+                "file": (
+                    io.BytesIO(b"name,email\nAda,ada\x00@example.com\n"),
+                    "nul_byte.csv",
+                )
+            },
+            content_type="multipart/form-data",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(b"NUL bytes are not allowed", response.data)
+
 
 if __name__ == "__main__":
     unittest.main()

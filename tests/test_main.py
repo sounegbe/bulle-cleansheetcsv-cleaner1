@@ -158,6 +158,83 @@ class TestCleanCSV(unittest.TestCase):
             self.assertEqual(rows[0]["amount"], "100.50")
             self.assertEqual(rows[1]["amount"], "0")
 
+    def test_rejects_empty_file(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            folder = Path(temp_dir)
+            source = folder / "empty.csv"
+            output = folder / "output.csv"
+            source.write_text("", encoding="utf-8")
+
+            with self.assertRaisesRegex(ValueError, "header row"):
+                clean_csv(source, output)
+
+            self.assertFalse(output.exists())
+
+    def test_rejects_blank_column_name(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            folder = Path(temp_dir)
+            source = folder / "input.csv"
+            output = folder / "output.csv"
+            source.write_text(
+                "name, ,email\\nAda,Lovelace,ada@example.com\\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(
+                ValueError, "Column names cannot be empty"
+            ):
+                clean_csv(source, output)
+
+            self.assertFalse(output.exists())
+
+    def test_rejects_duplicate_column_names_after_trimming(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            folder = Path(temp_dir)
+            source = folder / "input.csv"
+            output = folder / "output.csv"
+            source.write_text(
+                "name, name \nAda,Lovelace\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaisesRegex(ValueError, "must be unique"):
+                clean_csv(source, output)
+
+            self.assertFalse(output.exists())
+
+    def test_accepts_header_only_csv(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            folder = Path(temp_dir)
+            source = folder / "input.csv"
+            output = folder / "output.csv"
+            source.write_text("name,email\n", encoding="utf-8")
+
+            report = clean_csv(source, output)
+
+            self.assertEqual(report["input_rows"], 0)
+            self.assertEqual(report["output_rows"], 0)
+            self.assertEqual(report["duplicates_removed"], 0)
+
+            with output.open(newline="", encoding="utf-8") as file:
+                self.assertEqual(
+                    list(csv.reader(file)),
+                    [["name", "email"]],
+                )
+
+    def test_rejects_nul_byte_in_csv_data(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            folder = Path(temp_dir)
+            source = folder / "input.csv"
+            output = folder / "output.csv"
+            source.write_bytes(
+                b"name,email\nAda,ada\x00@example.com\n"
+            )
+
+            with self.assertRaisesRegex(ValueError, "NUL bytes"):
+                clean_csv(source, output)
+
+            self.assertFalse(output.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
