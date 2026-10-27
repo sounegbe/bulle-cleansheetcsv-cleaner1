@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Cleaning Results — CleanSheet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <header class="brand">
+            <div class="brand-mark">CS</div>
+            <div>
+                <p class="eyebrow">CLEANING COMPLETE</p>
+                <h1>CleanSheet</h1>
+            </div>
+        </header>
+
+        <section class="hero result-hero">
+            <p class="eyebrow">YOUR RESULTS</p>
+            <h2>Your CSV is ready.</h2>
+            <p class="description">
+                Review the summary below, then download your cleaned file.
+            </p>
+
+            <div class="stats">
+                <article>
+                    <span>Input rows</span>
+                    <strong>{{ stats.input_rows }}</strong>
+                </article>
+                <article>
+                    <span>Output rows</span>
+                    <strong>{{ stats.output_rows }}</strong>
+                </article>
+                <article>
+                    <span>Duplicates removed</span>
+                    <strong>{{ stats.duplicates_removed }}</strong>
+                </article>
+                <article>
+                    <span>Rows with missing values</span>
+                    <strong>{{ stats.rows_with_missing_values }}</strong>
+                </article>
+            </div>
+
+            <a class="button" href="{{ url_for('download_cleaned_file', file_id=file_id) }}">Download cleaned CSV</a>
+
+            <p class="hint">
+                Generated files are temporary and expire after one hour.
+            </p>
+
+            <a class="back-link" href="{{ url_for('index') }}">Clean another file</a>
+        </section>
+
+        <footer>CleanSheet CSV Cleaner · Built for clearer data</footer>
+    </main>
+</body>
+</html>

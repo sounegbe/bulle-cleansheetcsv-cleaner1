@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CleanSheet — CSV Cleaner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main class="container">
+        <header class="brand">
+            <div class="brand-mark">CS</div>
+            <div>
+                <p class="eyebrow">SIMPLE DATA CLEANING</p>
+                <h1>CleanSheet</h1>
+            </div>
+        </header>
+
+        <section class="hero">
+            <p class="eyebrow">YOUR DATA, CLEANER</p>
+            <h2>Make messy CSV files useful again.</h2>
+            <p class="description">
+                Remove duplicate rows and extra spaces in a few seconds.
+                Your original upload is not modified.
+            </p>
+
+            <form action="{{ url_for('clean_upload') }}"
+                  method="post"
+                  enctype="multipart/form-data">
+                <label for="file">Choose a CSV file</label>
+                <input
+                    id="file"
+                    name="file"
+                    type="file"
+                    accept=".csv,text/csv"
+                    required
+                >
+                <p class="hint">CSV files only · Maximum size: 5 MB</p>
+                <button type="submit">Clean my CSV</button>
+            </form>
+
+            {% if error %}
+                <div class="message error" role="alert">{{ error }}</div>
+            {% endif %}
+        </section>
+
+        <section class="features">
+            <article>
+                <span class="feature-number">01</span>
+                <h3>Trim spaces</h3>
+                <p>Remove unnecessary spaces around values.</p>
+            </article>
+            <article>
+                <span class="feature-number">02</span>
+                <h3>Remove duplicates</h3>
+                <p>Keep the first copy of each matching row.</p>
+            </article>
+            <article>
+                <span class="feature-number">03</span>
+                <h3>See the results</h3>
+                <p>Review the cleaning summary before downloading.</p>
+            </article>
+        </section>
+
+        <footer>
+            CleanSheet CSV Cleaner · Built for clearer data
+        </footer>
+    </main>
+</body>
+</html>
