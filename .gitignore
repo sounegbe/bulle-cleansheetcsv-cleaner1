@@ -1,0 +1,19 @@
+# Python virtual environment
+.venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Generated output
+output/
+
+# Test and tool caches
+.coverage
+.pytest_cache/
+.mypy_cache/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
